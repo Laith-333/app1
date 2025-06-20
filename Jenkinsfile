@@ -4,8 +4,6 @@ pipeline {
     environment {
         TEST_IP = '192.168.124.153'
         PROD_IP = '192.168.124.145'
-        TEST_PASSWORD = credentials('student-password')
-        PROD_PASSWORD = credentials('student-password2')
     }
 
     stages {
@@ -19,9 +17,11 @@ pipeline {
         stage('Deploy to Test') {
             steps {
                 echo '🚀 Deploying to TEST'
-                sh '''
-                sshpass -p "$TEST_PASSWORD" scp -o StrictHostKeyChecking=no -r Dockerfile Jenkinsfile index.html student@$TEST_IP:/var/www/html/
-                '''
+                withCredentials([usernamePassword(credentialsId: 'student-password', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS')]) {
+                    sh '''
+                        sshpass -p "$TEST_PASS" scp -o StrictHostKeyChecking=no -r Dockerfile Jenkinsfile index.html $TEST_USER@$TEST_IP:/var/www/html/
+                    '''
+                }
             }
         }
 
@@ -34,9 +34,11 @@ pipeline {
         stage('Deploy to Production') {
             steps {
                 echo '🚀 Deploying to PRODUCTION'
-                sh '''
-                sshpass -p "$PROD_PASSWORD" scp -o StrictHostKeyChecking=no -r Dockerfile Jenkinsfile index.html student@$PROD_IP:/var/www/html/
-                '''
+                withCredentials([usernamePassword(credentialsId: 'student-password2', usernameVariable: 'PROD_USER', passwordVariable: 'PROD_PASS')]) {
+                    sh '''
+                        sshpass -p "$PROD_PASS" scp -o StrictHostKeyChecking=no -r Dockerfile Jenkinsfile index.html $PROD_USER@$PROD_IP:/var/www/html/
+                    '''
+                }
             }
         }
     }
