@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     environment {
-        DEPLOY_USER = 'student'
         TEST_IP = '192.168.124.153'
         PROD_IP = '192.168.124.16'
+        TEST_PASSWORD = credentials('student-password')
+        PROD_PASSWORD = credentials('student-password2')
     }
 
     stages {
@@ -18,9 +19,9 @@ pipeline {
         stage('Deploy to Test') {
             steps {
                 echo '🚀 Deploying to TEST'
-                sshagent (credentials: ['ssh-key-test']) {
-                    sh 'scp -r * $DEPLOY_USER@$TEST_IP:/var/www/html/'
-                }
+                sh '''
+                sshpass -p "$TEST_PASSWORD" scp -o StrictHostKeyChecking=no -r Dockerfile Jenkinsfile index.html student@$TEST_IP:/var/www/html/
+                '''
             }
         }
 
@@ -33,9 +34,9 @@ pipeline {
         stage('Deploy to Production') {
             steps {
                 echo '🚀 Deploying to PRODUCTION'
-                sshagent (credentials: ['ssh-key-test']) {
-                    sh 'scp -r * $DEPLOY_USER@$PROD_IP:/var/www/html/'
-                }
+                sh '''
+                sshpass -p "$PROD_PASSWORD" scp -o StrictHostKeyChecking=no -r Dockerfile Jenkinsfile index.html student@$PROD_IP:/var/www/html/
+                '''
             }
         }
     }
