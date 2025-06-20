@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DEPLOY_USER = 'student'  // change if needed
+        DEPLOY_USER = 'student'
         TEST_IP = '192.168.124.153'
         PROD_IP = '192.168.124.16'
     }
@@ -11,7 +11,7 @@ pipeline {
         stage('Build & Test') {
             steps {
                 echo '🛠️ Building & Testing App'
-                sh 'ls -la app/' // change 'app/' to '.' if your files are in root
+                sh 'ls -la'
             }
         }
 
@@ -19,7 +19,7 @@ pipeline {
             steps {
                 echo '🚀 Deploying to TEST'
                 sshagent (credentials: ['ssh-key-test']) {
-                    sh 'scp -r app/* $DEPLOY_USER@$TEST_IP:/var/www/html/'
+                    sh 'scp -r * $DEPLOY_USER@$TEST_IP:/var/www/html/'
                 }
             }
         }
@@ -34,7 +34,7 @@ pipeline {
             steps {
                 echo '🚀 Deploying to PRODUCTION'
                 sshagent (credentials: ['ssh-key-prod']) {
-                    sh 'scp -r app/* $DEPLOY_USER@$PROD_IP:/var/www/html/'
+                    sh 'scp -r * $DEPLOY_USER@$PROD_IP:/var/www/html/'
                 }
             }
         }
