@@ -1,4 +1,4 @@
-pipeline {
+fix it pipeline {
     agent any
 
     environment {
@@ -19,8 +19,7 @@ pipeline {
                 echo '🚀 Deploying to TEST'
                 withCredentials([usernamePassword(credentialsId: 'student-password', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS')]) {
                     sh '''
-                        echo "$TEST_PASS" | sshpass -p "$TEST_PASS" ssh -tt -o StrictHostKeyChecking=no $TEST_USER@$TEST_IP 'echo "$TEST_PASS" | sudo -S mkdir -p /var/www/html'
-                        sshpass -p "$TEST_PASS" scp -o StrictHostKeyChecking=no Dockerfile Jenkinsfile index.html $TEST_USER@$TEST_IP:/var/www/html/
+                        sshpass -p "$TEST_PASS" scp -o StrictHostKeyChecking=no -r Dockerfile Jenkinsfile index.html $TEST_USER@$TEST_IP:/var/www/html/
                     '''
                 }
             }
@@ -37,8 +36,7 @@ pipeline {
                 echo '🚀 Deploying to PRODUCTION'
                 withCredentials([usernamePassword(credentialsId: 'student-password2', usernameVariable: 'PROD_USER', passwordVariable: 'PROD_PASS')]) {
                     sh '''
-                        echo "$PROD_PASS" | sshpass -p "$PROD_PASS" ssh -tt -o StrictHostKeyChecking=no $PROD_USER@$PROD_IP 'echo "$PROD_PASS" | sudo -S mkdir -p /var/www/html'
-                        sshpass -p "$PROD_PASS" scp -o StrictHostKeyChecking=no Dockerfile Jenkinsfile index.html $PROD_USER@$PROD_IP:/var/www/html/
+                        sshpass -p "$PROD_PASS" scp -o StrictHostKeyChecking=no -r Dockerfile Jenkinsfile index.html $PROD_USER@$PROD_IP:/var/www/html/
                     '''
                 }
             }
