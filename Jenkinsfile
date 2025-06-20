@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         TEST_IP = '192.168.124.153'
-        PROD_IP = '192.168.124.16'
+        PROD_IP = '192.168.124.145'
         TEST_PASSWORD = credentials('student-password')
         PROD_PASSWORD = credentials('student-password2')
     }
