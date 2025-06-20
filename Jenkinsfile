@@ -33,7 +33,7 @@ pipeline {
         stage('Deploy to Production') {
             steps {
                 echo '🚀 Deploying to PRODUCTION'
-                sshagent (credentials: ['ssh-key-prod']) {
+                sshagent (credentials: ['ssh-key-test']) {
                     sh 'scp -r * $DEPLOY_USER@$PROD_IP:/var/www/html/'
                 }
             }
