@@ -8,16 +8,10 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
-            steps {
-                git 'https://github.com/Laith-333/Jenkins.git'
-            }
-        }
-
         stage('Build & Test') {
             steps {
                 echo '🛠️ Building & Testing App'
-                sh 'ls -la app/'
+                sh 'ls -la app/' // change 'app/' to '.' if your files are in root
             }
         }
 
