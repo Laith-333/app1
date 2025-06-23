@@ -20,7 +20,7 @@ pipeline {
                 echo '🚀 Deploying to TEST'
                 withCredentials([usernamePassword(credentialsId: 'student-password', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS')]) {
                     sh '''
-                        echo "$TEST_PASS" | sshpass -p "$TEST_PASS" ssh -o StrictHostKeyChecking=no $TEST_USER@$TEST_IP "sudo mkdir -p /var/www/html"
+                        echo "$TEST_PASS" | sshpass -p "$TEST_PASS" ssh -o StrictHostKeyChecking=no $TEST_USER@$TEST_IP "echo $TEST_PASS | sudo -S mkdir -p /var/www/html"
                         sshpass -p "$TEST_PASS" scp -o StrictHostKeyChecking=no index.html style.css app.js $TEST_USER@$TEST_IP:/var/www/html/
                     '''
                 }
@@ -38,7 +38,7 @@ pipeline {
                 echo '🚀 Deploying to PRODUCTION'
                 withCredentials([usernamePassword(credentialsId: 'student-password2', usernameVariable: 'PROD_USER', passwordVariable: 'PROD_PASS')]) {
                     sh '''
-                        echo "$PROD_PASS" | sshpass -p "$PROD_PASS" ssh -o StrictHostKeyChecking=no $PROD_USER@$PROD_IP "sudo mkdir -p /var/www/html"
+                        echo "$PROD_PASS" | sshpass -p "$PROD_PASS" ssh -o StrictHostKeyChecking=no $PROD_USER@$PROD_IP "echo $PROD_PASS | sudo -S mkdir -p /var/www/html"
                         sshpass -p "$PROD_PASS" scp -o StrictHostKeyChecking=no index.html style.css app.js $PROD_USER@$PROD_IP:/var/www/html/
                     '''
                 }
