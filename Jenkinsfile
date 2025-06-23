@@ -2,30 +2,27 @@ pipeline {
     agent any
 
     environment {
-        DEPLOY_USER = 'student'  // change if needed
         TEST_IP = '192.168.124.153'
-        PROD_IP = '192.168.124.16'
+        PROD_IP = '192.168.124.145'
     }
 
     stages {
-        stage('Clone Repository') {
-            steps {
-                git 'https://github.com/Laith-333/Jenkins.git'
-            }
-        }
-
         stage('Build & Test') {
             steps {
                 echo '🛠️ Building & Testing App'
-                sh 'ls -la app/'
+                sh 'ls -la'
+                sh 'docker build -t myapp .'
             }
         }
 
         stage('Deploy to Test') {
             steps {
                 echo '🚀 Deploying to TEST'
-                sshagent (credentials: ['ssh-key-test']) {
-                    sh 'scp -r app/* $DEPLOY_USER@$TEST_IP:/var/www/html/'
+                withCredentials([usernamePassword(credentialsId: 'student-password', usernameVariable: 'TEST_USER', passwordVariable: 'TEST_PASS')]) {
+                    sh '''
+                        echo "$TEST_PASS" | sshpass -p "$TEST_PASS" ssh -o StrictHostKeyChecking=no $TEST_USER@$TEST_IP "sudo mkdir -p /var/www/html"
+                        sshpass -p "$TEST_PASS" scp -o StrictHostKeyChecking=no index.html style.css app.js $TEST_USER@$TEST_IP:/var/www/html/
+                    '''
                 }
             }
         }
@@ -39,8 +36,11 @@ pipeline {
         stage('Deploy to Production') {
             steps {
                 echo '🚀 Deploying to PRODUCTION'
-                sshagent (credentials: ['ssh-key-prod']) {
-                    sh 'scp -r app/* $DEPLOY_USER@$PROD_IP:/var/www/html/'
+                withCredentials([usernamePassword(credentialsId: 'student-password2', usernameVariable: 'PROD_USER', passwordVariable: 'PROD_PASS')]) {
+                    sh '''
+                        echo "$PROD_PASS" | sshpass -p "$PROD_PASS" ssh -o StrictHostKeyChecking=no $PROD_USER@$PROD_IP "sudo mkdir -p /var/www/html"
+                        sshpass -p "$PROD_PASS" scp -o StrictHostKeyChecking=no index.html style.css app.js $PROD_USER@$PROD_IP:/var/www/html/
+                    '''
                 }
             }
         }
